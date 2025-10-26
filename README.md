@@ -25,6 +25,7 @@ Libraries: requests, python-dotenv, openai
 Frontend: HTML, Jinja Templates
 
 Installation
+
 1️⃣ Clone the repository
 git clone https://github.com/yourusername/ai-chatbot-weather.git
 cd ai-chatbot-weather

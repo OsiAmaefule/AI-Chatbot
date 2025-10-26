@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Chatbot</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0d0d0d;
+      color: #ffffff;
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.light-mode {
+      background-color: #f5f5f5;
+      color: #111;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      text-align: center;
+      color: #0af;
+    }
+
+    form {
+      background-color: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 10px #00000055;
+    }
+
+    body.light-mode form {
+      background-color: #ffffff;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      background-color: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+    }
+
+    body.light-mode input,
+    body.light-mode select,
+    body.light-mode textarea {
+      background-color: #f9f9f9;
+      color: #000;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #0af;
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #08c;
+    }
+
+    a {
+      color: #0af;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+
+    .chat-container {
+      background-color: #121212;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 5px #00000033;
+    }
+
+    body.light-mode .chat-container {
+      background-color: #ffffff;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      line-height: 1.6;
+      font-size: 1rem;
+      opacity: 0;
+      animation: fadeIn 0.6s ease forwards;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .message.user {
+      background-color: #1e1e1e;
+      margin-left: auto;
+      text-align: right;
+      flex-direction: row-reverse;
+    }
+
+    .message.assistant {
+      background-color: #222;
+      border-left: 4px solid #0af;
+      margin-right: auto;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      background-color: #0af;
+      color: #000;
+    }
+
+    .chat-content pre code {
+      display: block;
+      padding: 10px;
+      margin-top: 5px;
+      background: #0f0f0f;
+      border-radius: 6px;
+      color: #0f0;
+      overflow-x: auto;
+      font-size: 0.95rem;
+    }
+
+    .typing-indicator {
+      font-style: italic;
+      opacity: 0.8;
+      margin-top: 10px;
+    }
+
+    h2 {
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+      margin-top: 30px;
+    }
+
+    .toggle-btn {
+      float: right;
+      font-size: 0.85rem;
+      padding: 5px 10px;
+      margin-bottom: 20px;
+      background: none;
+      border: 1px solid #0af;
+      color: #0af;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .toggle-btn:hover {
+      background-color: #0af;
+      color: #000;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-tomorrow.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+</head>
+<body>
+  <div class="container">
+    <button class="toggle-btn" onclick="toggleTheme()">🌓 Toggle Theme</button>
+    <h1>💬 AI Chatbot Assistant</h1>
+
+    <form method="post">
+      <label for="user_input">Your message:</label>
+      <input type="text" id="user_input" name="user_input" placeholder="Say something...">
+
+      <label for="city_name">Weather city (optional):</label>
+      <input type="text" id="city_name" name="city_name" placeholder="Enter city for weather">
+
+      <label for="model">Model:</label>
+      <select name="model" id="model">
+        <option value="gpt-3.5-turbo" selected>gpt-3.5-turbo</option>
+        <option value="gpt-4">gpt-4</option>
+      </select>
+
+      <input type="hidden" name="latitude" id="latitude">
+      <input type="hidden" name="longitude" id="longitude">
+
+      <button type="submit">💬 Send</button>
+      <button type="button" onclick="getLocation()">📍 Local Weather</button>
+      <a href="/reset">🔄 Reset</a>
+    </form>
+
+    <h2>📝 Chat History</h2>
+    <div class="chat-container">
+      {% for msg in messages %}
+        <div class="message {{ msg.role }}">
+          <div class="avatar">{% if msg.role == 'user' %}🧑{% else %}🤖{% endif %}</div>
+          <div class="chat-content"><strong>{{ msg.role.capitalize() }}:</strong> {{ msg.content|safe }}</div>
+        </div>
+      {% endfor %}
+      <div class="typing-indicator" id="typing" style="display: none;">Assistant is typing...</div>
+    </div>
+
+    <h2>🤖 Response</h2>
+    <div id="response-container">
+      <p id="response">{{ response }}</p>
+      <audio id="audio" controls style="display:none;"></audio>
+    </div>
+  </div>
+
+  <script>
+    function getLocation() {
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        document.getElementById("latitude").value = pos.coords.latitude;
+        document.getElementById("longitude").value = pos.coords.longitude;
+        document.forms[0].submit();
+      }, function() {
+        alert("Location access denied.");
+      });
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      body.classList.toggle("light-mode");
+      localStorage.setItem("theme", body.classList.contains("light-mode") ? "light" : "dark");
+    }
+
+    (function () {
+      const theme = localStorage.getItem("theme");
+      if (theme === "light") document.body.classList.add("light-mode");
+
+      const resp = document.getElementById("response");
+      if (resp) {
+        const markdown = marked.parse(resp.textContent);
+        resp.innerHTML = markdown;
+        Prism.highlightAll();
+      }
+    })();
+
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function () {
+      document.getElementById("typing").style.display = "block";
+    });
+  </script>
+</body>
+</html>
+

@@ -42,8 +42,8 @@ pip install -r requirements.txt
 
 Create a .env file in the project root with the following:
 
-OPENAI_API_KEY=your_openai_api_key
-OPENWEATHERMAP_API_KEY=your_openweathermap_api_key
+***OPENAI_API_KEY=your_openai_api_key
+OPENWEATHERMAP_API_KEY=your_openweathermap_api_key***
 
 5️⃣ Run the application
 python app.py
